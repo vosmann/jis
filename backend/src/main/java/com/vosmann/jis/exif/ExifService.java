@@ -8,13 +8,15 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.stream.Stream;
 
-public class ExifExtractionServiceImpl implements ExifExtractionService {
+public class ExifService {
 
-    private static final Logger LOG = LogManager.getLogger(ExifExtractionServiceImpl.class);
+    private static final Logger LOG = LogManager.getLogger(ExifService.class);
 
-    public String extract(final InputStream stream) {
-        try {
+    public String process(final String id) {
+
+        try (final Stream stream = null) {
             final Metadata metadata = ImageMetadataReader.readMetadata(stream);
             return metadata.toString();
         } catch (final ImageProcessingException | IOException e) {

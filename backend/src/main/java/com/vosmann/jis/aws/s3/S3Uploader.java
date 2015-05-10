@@ -1,8 +1,6 @@
 package com.vosmann.jis.aws.s3;
 
 import com.amazonaws.AmazonClientException;
-import com.amazonaws.services.s3.AmazonS3Client;
-import com.amazonaws.services.s3.model.InitiateMultipartUploadRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.transfer.TransferManager;
 import com.amazonaws.services.s3.transfer.Upload;
@@ -18,13 +16,12 @@ import java.util.Optional;
 public class S3Uploader implements Uploader {
 
     private static final Logger LOG = LogManager.getLogger(S3Uploader.class);
-    private static final int SIZE = 10 * 1024 * 1024; // 10MiB
 
     @Autowired
     private S3Props props;
 
     @Autowired
-    private TransferManager transferManager;
+    private TransferManager transferManager; // Allows uploads without knowing file size.
 
     /**
      * Parts of this implementation (upload(), close()) could be implemented in an abstract class.
@@ -42,7 +39,8 @@ public class S3Uploader implements Uploader {
                                                          .keyPart(id) // No file extension.
                                                          .build();
 
-        final Upload upload = transferManager.upload(address.getBucket(), id, stream, getObjectMetadata());
+        final Upload upload = transferManager.upload(address.getBucket(), id, stream, new ObjectMetadata());
+
         try {
             upload.waitForCompletion();
             url = Optional.of(address.getUrl());
@@ -51,12 +49,6 @@ public class S3Uploader implements Uploader {
         }
 
         return url;
-    }
-
-    private ObjectMetadata getObjectMetadata() {
-        final ObjectMetadata objectMetadata = new ObjectMetadata();
-        // objectMetadata.setContentLength(SIZE);
-        return  objectMetadata;
     }
 
     private void close(final InputStream stream) {

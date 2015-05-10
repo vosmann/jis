@@ -1,5 +1,7 @@
-package com.vosmann.jis.photo;
+package com.vosmann.jis.exif;
 
+import com.vosmann.jis.aws.s3.Downloader;
+import com.vosmann.jis.aws.s3.S3Downloader;
 import com.vosmann.jis.aws.s3.S3Uploader;
 import com.vosmann.jis.aws.s3.Uploader;
 import com.vosmann.jis.config.context.S3Config;
@@ -12,28 +14,28 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(S3Config.class)
-public class PhotoApp {
+public class ExifApp {
 
     @Bean
-    public PhotoService photoService() {
-        return new PhotoService();
+    public ExifService photoService() {
+        return new ExifService();
     }
 
     @Bean
-    public Uploader uploader() {
-        return new S3Uploader();
+    public Downloader downloader() {
+        return new S3Downloader();
     }
 
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
-        factory.setPort(2000);
+        factory.setPort(3000);
         return factory;
     }
 
 
     public static void main(final String[] args) {
-        SpringApplication.run(PhotoApp.class);
+        SpringApplication.run(ExifApp.class);
     }
 
 

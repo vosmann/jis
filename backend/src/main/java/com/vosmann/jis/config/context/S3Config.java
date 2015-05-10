@@ -25,12 +25,12 @@ public class S3Config {
         return credentials;
     }
 
-//    @Bean
-//    public AmazonS3Client amazonS3Client(final AWSCredentials credentials) {
-//        final AmazonS3Client client = new AmazonS3Client(credentials);
-//        client.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
-//        return client;
-//    }
+    @Bean
+    public AmazonS3Client amazonS3Client(final AWSCredentials credentials) {
+        final AmazonS3Client client = new AmazonS3Client(credentials);
+        // client.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
+        return client;
+    }
 
     @Bean
     public TransferManager transferManager(final AWSCredentials credentials) {

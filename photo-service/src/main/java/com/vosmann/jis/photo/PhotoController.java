@@ -1,9 +1,5 @@
 package com.vosmann.jis.photo;
 
-import com.vosmann.jis.PhotoMetadata;
-import com.vosmann.jis.config.props.S3Props;
-import com.vosmann.jis.exif.ExifExtractionService;
-import com.vosmann.jis.exif.ExifExtractionServiceImpl;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
