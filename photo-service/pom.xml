@@ -14,17 +14,16 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.vosmann.jis</groupId>
+            <artifactId>backend</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
             <groupId>com.drewnoakes</groupId>
             <artifactId>metadata-extractor</artifactId>
-        </dependency>
-        <!-- temp -->
-        <dependency>
-            <groupId>com.vosmann.jis</groupId>
-            <artifactId>backend</artifactId>
         </dependency>
     </dependencies>
 

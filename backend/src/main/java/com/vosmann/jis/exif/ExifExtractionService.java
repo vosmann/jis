@@ -1,4 +1,4 @@
-package com.vosmann.jis.image;
+package com.vosmann.jis.exif;
 
 import java.io.InputStream;
 
