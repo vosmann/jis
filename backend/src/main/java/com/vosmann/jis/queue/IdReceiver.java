@@ -31,7 +31,7 @@ public class IdReceiver {
     public IdReceiver(final Queue queue) {
         queueName = queue.getName();
         factory = new ConnectionFactory();
-        factory.setHost("localhost");
+        factory.setHost("localhost"); // test
         executor = Executors.newSingleThreadExecutor();
     }
 

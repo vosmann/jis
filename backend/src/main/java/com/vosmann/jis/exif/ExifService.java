@@ -6,6 +6,7 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.vosmann.jis.aws.s3.Downloader;
+import com.vosmann.jis.exif.storage.ExifMetadataStorage;
 import com.vosmann.jis.queue.IdConsumer;
 import com.vosmann.jis.queue.IdSender;
 import org.apache.logging.log4j.LogManager;
@@ -28,9 +29,10 @@ public class ExifService implements IdConsumer {
     @Autowired
     private Downloader downloader;
     @Autowired
+    private ExifMetadataStorage storage;
+    @Autowired
     private IdSender idSender;
 
-    // TODO
     private Optional<ExifMetadata> getExifMetadata(final String id) {
         return Optional.empty();
     }
@@ -44,7 +46,8 @@ public class ExifService implements IdConsumer {
 
         final Optional<Metadata> metadata = extractAllMetadata(id);
         if (metadata.isPresent()) {
-            final ExifMetadata exifMetadata = toExifMetadata(metadata.get());
+            final ExifMetadata exifMetadata = toExifMetadata(id, metadata.get());
+            storage.store(exifMetadata);
             idSender.send(id);
         }
 
@@ -67,10 +70,10 @@ public class ExifService implements IdConsumer {
     /**
      * May return empty ExifMetadata.
      */
-    private ExifMetadata toExifMetadata(final Metadata metadata) {
+    private ExifMetadata toExifMetadata(final String id, final Metadata metadata) {
         ExifMetadata.Builder builder = new ExifMetadata.Builder();
+        builder.id(id);
 
-        // Do a stream instead of nested loop.
         for (final Directory directory : metadata.getDirectories()) {
             for (final Tag tag : directory.getTags()) {
 

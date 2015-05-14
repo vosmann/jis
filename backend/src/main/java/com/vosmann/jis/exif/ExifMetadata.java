@@ -1,14 +1,18 @@
 package com.vosmann.jis.exif;
 
-// Specification expects all fields as strings.
+import com.google.common.base.Preconditions;
+
+// Specification mentions all fields as strings.
 public class ExifMetadata {
 
-    private String dateTime;
-    private String exposureTime;
-    private String fNumber;
-    private String orientation;
+    private final String id;
+    private final String dateTime;
+    private final String exposureTime;
+    private final String fNumber;
+    private final String orientation;
 
     private ExifMetadata(Builder builder) {
+        id = builder.id;
         dateTime = builder.dateTime;
         exposureTime = builder.exposureTime;
         fNumber = builder.fNumber;
@@ -16,10 +20,16 @@ public class ExifMetadata {
     }
 
     public static final class Builder {
+        private String id;
         private String dateTime;
         private String exposureTime;
         private String fNumber;
         private String orientation;
+
+        public Builder id(String id) {
+            this.id = id;
+            return this;
+        }
 
         public Builder dateTime(String dateTime) {
             this.dateTime = dateTime;
@@ -46,4 +56,25 @@ public class ExifMetadata {
             return new ExifMetadata(this);
         }
     }
+
+    public String getId() {
+        return id;
+    }
+
+    public String getDateTime() {
+        return dateTime;
+    }
+
+    public String getExposureTime() {
+        return exposureTime;
+    }
+
+    public String getfNumber() {
+        return fNumber;
+    }
+
+    public String getOrientation() {
+        return orientation;
+    }
+
 }
