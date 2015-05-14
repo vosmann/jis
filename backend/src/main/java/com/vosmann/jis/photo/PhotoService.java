@@ -1,6 +1,7 @@
 package com.vosmann.jis.photo;
 
 import com.vosmann.jis.aws.s3.Uploader;
+import com.vosmann.jis.photo.storage.PhotoMetadataStorage;
 import com.vosmann.jis.queue.IdConsumer;
 import com.vosmann.jis.queue.IdSender;
 import org.apache.logging.log4j.LogManager;
@@ -18,6 +19,8 @@ public class PhotoService implements IdConsumer {
     private Uploader uploader;
     @Autowired
     private IdSender idSender;
+    @Autowired
+    private PhotoMetadataStorage storage;
 
     public String process(final String userMetadata, final InputStream stream) {
 
@@ -28,7 +31,7 @@ public class PhotoService implements IdConsumer {
         if (url.isPresent()) {
             metadataBuilder.url(url.get());
             final PhotoMetadata photoMetadata = metadataBuilder.build();
-            store(photoMetadata);
+            storage.store(photoMetadata);
             idSender.send(photoMetadata.getId());
         } else {
             LOG.error("File upload failed.");
@@ -40,16 +43,7 @@ public class PhotoService implements IdConsumer {
     @Override
     public void accept(final String id) {
         LOG.error("Exif data was extracted from photo with ID {}.", id);
-         flagWithExif(id);
+        storage.flagWithExif(id);
     }
-
-    private void flagWithExif(String id) {
-        // todo read by id from mongo and update with flag set to true.
-    }
-
-    private void store(PhotoMetadata metadata) {
-        // todo store to ... mongo?
-    }
-
 
 }

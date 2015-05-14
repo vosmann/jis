@@ -1,21 +1,40 @@
 package com.vosmann.jis.photo;
 
+import org.springframework.data.annotation.Id;
+
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Mutable object with no-arg constructor (Mongo requirement). Builder kept for practicality.
+ */
 public class PhotoMetadata {
 
-    private final String id;
-    private final String user;
-    private final String description;
-    private final String url;
+    @Id
+    private String id;
+    private String user;
+    private String description;
+    private String url;
+    private boolean hasExif;
+
+    public PhotoMetadata() { }
 
     private PhotoMetadata(Builder builder) {
         id = checkNotNull(builder.id, "Id can't be null.");
         user = checkNotNull(builder.user, "User can't be null.");
         description = checkNotNull(builder.description, "Description can't be null.");
         url = checkNotNull(builder.url, "URL can't be null.");
+        hasExif = builder.hasExif;
+    }
+
+    public static PhotoMetadata copyWithExif(final PhotoMetadata original) {
+        return new Builder().id(original.id)
+                            .user(original.user)
+                            .description(original.description)
+                            .url(original.url)
+                            .hasExif(true)
+                            .build();
     }
 
     public static final class Builder {
@@ -24,6 +43,7 @@ public class PhotoMetadata {
         private String user;
         private String description;
         private String url;
+        private boolean hasExif;
 
         public Builder id(final String id) {
             this.id = id;
@@ -42,6 +62,11 @@ public class PhotoMetadata {
 
         public Builder url(final String url) {
             this.url = url;
+            return this;
+        }
+
+        public Builder hasExif(final boolean hasExif) {
+            this.hasExif = hasExif;
             return this;
         }
 
