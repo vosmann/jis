@@ -2,27 +2,84 @@ package com.vosmann.jis.exif;
 
 import com.drew.imaging.ImageMetadataReader;
 import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
+import com.drew.metadata.Tag;
+import com.vosmann.jis.aws.s3.Downloader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.stream.Stream;
+import java.util.Optional;
 
 public class ExifService {
 
     private static final Logger LOG = LogManager.getLogger(ExifService.class);
 
-    public String process(final String id) {
+    private static final String GPS_TIMESTAMP_TAG_NAME = "GPS Time-Stamp";
+    private static final String F_NUMBER_TAG_NAME = "F-Number";
+    private static final String EXPOSURE_TIME_TAG_NAME = "Exposure Time";
+    private static final String ORIENTATION_TAG_NAME = "Orientation";
 
-        try (final Stream stream = null) {
-            final Metadata metadata = ImageMetadataReader.readMetadata(stream);
-            return metadata.toString();
-        } catch (final ImageProcessingException | IOException e) {
-            LOG.error("Image processing problem.", e);
-            return "Failure";
+    @Autowired
+    private Downloader downloader;
+
+    public Optional<String> get(final String id) {
+        return Optional.empty(); // TODO
+    }
+    private Optional<ExifMetadata> getExifMetadata(final String id) {
+        return Optional.empty(); // TODO
+    }
+
+    public Optional<String> process(final String id) {
+
+        final Optional<Metadata> metadata = extractAllMetadata(id);
+        if (metadata.isPresent()) {
+            final ExifMetadata exifMetadata = toExifMetadata(metadata.get());
         }
+
+        return Optional.empty();
+    }
+
+    private Optional<Metadata> extractAllMetadata(final String id) {
+        try (final InputStream stream = downloader.download(id)) {
+            final Metadata metadata = ImageMetadataReader.readMetadata(stream);
+            return Optional.of(metadata);
+        }  catch (final IOException e) {
+            LOG.error("File download problem.", e);
+        } catch (final ImageProcessingException e) {
+            LOG.error("File processing problem.", e);
+        }
+
+        return Optional.empty();
+    }
+
+    private ExifMetadata toExifMetadata(final Metadata metadata) {
+        ExifMetadata.Builder builder = new ExifMetadata.Builder();
+
+        // Do a stream instead of nested loop.
+        for (final Directory directory : metadata.getDirectories()) {
+            for (final Tag tag : directory.getTags()) {
+
+                final String name = tag.getTagName();
+                final String description = tag.getDescription();
+                LOG.error("Name: {}, description: {}", name, description);
+
+                if (GPS_TIMESTAMP_TAG_NAME.equalsIgnoreCase(name)) {
+                    builder.dateTime(description);
+                } else if (EXPOSURE_TIME_TAG_NAME.equalsIgnoreCase(name)) {
+                    builder.exposureTime(description);
+                } else if (F_NUMBER_TAG_NAME.equalsIgnoreCase(name)) {
+                    builder.fNumber(description);
+                } else if (ORIENTATION_TAG_NAME.equalsIgnoreCase(name)) {
+                    builder.orientation(description);
+                }
+            }
+        }
+
+        return builder.build();
     }
 
 }

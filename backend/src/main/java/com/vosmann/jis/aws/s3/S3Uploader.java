@@ -39,7 +39,7 @@ public class S3Uploader implements Uploader {
                                                          .keyPart(id) // No file extension.
                                                          .build();
 
-        final Upload upload = transferManager.upload(address.getBucket(), id, stream, new ObjectMetadata());
+        final Upload upload = transferManager.upload(address.getBucket(), address.getKey(), stream, new ObjectMetadata());
 
         try {
             upload.waitForCompletion();

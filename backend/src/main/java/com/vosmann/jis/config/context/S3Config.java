@@ -28,7 +28,7 @@ public class S3Config {
     @Bean
     public AmazonS3Client amazonS3Client(final AWSCredentials credentials) {
         final AmazonS3Client client = new AmazonS3Client(credentials);
-        // client.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
+        client.setRegion(Region.getRegion(Regions.EU_CENTRAL_1));
         return client;
     }
 

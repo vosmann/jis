@@ -2,8 +2,6 @@ package com.vosmann.jis.exif;
 
 import com.vosmann.jis.aws.s3.Downloader;
 import com.vosmann.jis.aws.s3.S3Downloader;
-import com.vosmann.jis.aws.s3.S3Uploader;
-import com.vosmann.jis.aws.s3.Uploader;
 import com.vosmann.jis.config.context.S3Config;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -17,7 +15,7 @@ import org.springframework.context.annotation.Import;
 public class ExifApp {
 
     @Bean
-    public ExifService photoService() {
+    public ExifService exifService() {
         return new ExifService();
     }
 
@@ -33,10 +31,8 @@ public class ExifApp {
         return factory;
     }
 
-
     public static void main(final String[] args) {
         SpringApplication.run(ExifApp.class);
     }
-
 
 }

@@ -40,10 +40,4 @@ public class PhotoController {
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @RequestMapping("/test")
-    @ResponseBody
-    String test() {
-        return "Photo service reporting in.";
-    }
-
 }

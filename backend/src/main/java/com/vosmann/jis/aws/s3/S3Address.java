@@ -1,10 +1,8 @@
 package com.vosmann.jis.aws.s3;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 
 import java.util.List;
-import java.util.StringJoiner;
 import java.util.stream.Stream;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -13,7 +11,7 @@ import static java.util.stream.Collectors.joining;
 
 public class S3Address {
 
-    private static final String SCHEME = "http:/";
+    private static final String BASIC_URI = "http://s3.amazonaws.com";
     private static final String DELIMITER = "/";
 
     private final String bucket;
@@ -23,7 +21,7 @@ public class S3Address {
     private S3Address(Builder builder) {
         bucket = builder.bucket;
         key = builder.keyParts.stream().collect(joining(DELIMITER)); // Java 8 for fun.
-        url = Stream.of(SCHEME, bucket, key).collect(joining(DELIMITER));
+        url = Stream.of(BASIC_URI, bucket, key).collect(joining(DELIMITER));
     }
 
     public static final class Builder {

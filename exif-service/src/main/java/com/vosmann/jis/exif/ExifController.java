@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Optional;
+
 @RestController
 @EnableAutoConfiguration
 public class ExifController {
@@ -18,25 +20,32 @@ public class ExifController {
     @Autowired
     private ExifService exifService;
 
-    @RequestMapping(name = "exif", method = RequestMethod.GET)
+    // This won't be in the final solution; extraction will be triggered by queue.
+    @RequestMapping(value = "exif/{id}", method = RequestMethod.GET)
     @ResponseBody
-    ResponseEntity<String> getExifById(@PathVariable final String id) {
+    ResponseEntity<String> extract(@PathVariable final String id) {
         LOG.debug("Received exif GET by id request.");
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        final Optional<String> exifMetadata = exifService.process(id);
+        if (exifMetadata.isPresent()) {
+            return new ResponseEntity<>(exifMetadata.get(), HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
-    @RequestMapping(name = "exif", method = RequestMethod.GET)
-    @ResponseBody
-    ResponseEntity<String> searchExif(@PathVariable final String id) {
-        LOG.debug("Received exif POST search by EXIF request.");
-        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
-    }
-
-    @RequestMapping("/")
-    @ResponseBody
-    String test() {
-        return "Exif service reporting in.";
-    }
+//    @RequestMapping(name = "exif", method = RequestMethod.GET)
+//    @ResponseBody
+//    ResponseEntity<String> get(@PathVariable final String id) {
+//        LOG.debug("Received exif POST get by EXIF request.");
+//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
+//
+//    @RequestMapping(name = "exif", method = RequestMethod.POST)
+//    @ResponseBody
+//    ResponseEntity<String> search(@PathVariable final String id) {
+//        LOG.debug("Received exif POST search by EXIF request.");
+//        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+//    }
 
     public static void main(final String[] args) {
         SpringApplication.run(ExifController.class, args);
