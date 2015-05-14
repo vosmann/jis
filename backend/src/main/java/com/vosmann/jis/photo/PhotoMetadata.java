@@ -1,4 +1,4 @@
-package com.vosmann.jis;
+package com.vosmann.jis.photo;
 
 import java.util.UUID;
 
@@ -58,4 +58,9 @@ public class PhotoMetadata {
             return new PhotoMetadata(this);
         }
     }
+
+    public String getId() {
+        return id;
+    }
+
 }

@@ -1,7 +1,8 @@
 package com.vosmann.jis.photo;
 
-import com.vosmann.jis.PhotoMetadata;
 import com.vosmann.jis.aws.s3.Uploader;
+import com.vosmann.jis.queue.IdConsumer;
+import com.vosmann.jis.queue.IdSender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.InputStream;
 import java.util.Optional;
 
-public class PhotoService {
+public class PhotoService implements IdConsumer {
 
     private static final Logger LOG = LogManager.getLogger(PhotoService.class);
 
     @Autowired
     private Uploader uploader;
+    @Autowired
+    private IdSender idSender;
 
     public String process(final String userMetadata, final InputStream stream) {
 
@@ -24,18 +27,29 @@ public class PhotoService {
 
         if (url.isPresent()) {
             metadataBuilder.url(url.get());
-            final PhotoMetadata metadata = metadataBuilder.build();
-            store(metadata);
+            final PhotoMetadata photoMetadata = metadataBuilder.build();
+            store(photoMetadata);
+            idSender.send(photoMetadata.getId());
         } else {
             LOG.error("File upload failed.");
         }
 
-
         return "Failed";
     }
 
-    private void store(PhotoMetadata metadata) {
-        // todo
+    @Override
+    public void accept(final String id) {
+        LOG.error("Exif data was extracted from photo with ID {}.", id);
+         flagWithExif(id);
     }
+
+    private void flagWithExif(String id) {
+        // todo read by id from mongo and update with flag set to true.
+    }
+
+    private void store(PhotoMetadata metadata) {
+        // todo store to ... mongo?
+    }
+
 
 }

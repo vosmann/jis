@@ -3,6 +3,9 @@ package com.vosmann.jis.exif;
 import com.vosmann.jis.aws.s3.Downloader;
 import com.vosmann.jis.aws.s3.S3Downloader;
 import com.vosmann.jis.config.context.S3Config;
+import com.vosmann.jis.queue.IdReceiver;
+import com.vosmann.jis.queue.IdSender;
+import com.vosmann.jis.queue.Queue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -22,6 +25,18 @@ public class ExifApp {
     @Bean
     public Downloader downloader() {
         return new S3Downloader();
+    }
+
+    @Bean
+    public IdReceiver idReceiver(final ExifService exifService) {
+        final IdReceiver idReceiver = new IdReceiver(Queue.PHOTO_UPLOAD);
+        idReceiver.addIdConsumer(exifService);
+        return idReceiver;
+    }
+
+    @Bean
+    public IdSender idSender() {
+        return new IdSender(Queue.EXIF_EXTRACTION);
     }
 
     @Bean

@@ -3,6 +3,9 @@ package com.vosmann.jis.photo;
 import com.vosmann.jis.aws.s3.S3Uploader;
 import com.vosmann.jis.aws.s3.Uploader;
 import com.vosmann.jis.config.context.S3Config;
+import com.vosmann.jis.queue.IdReceiver;
+import com.vosmann.jis.queue.IdSender;
+import com.vosmann.jis.queue.Queue;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.embedded.EmbeddedServletContainerFactory;
@@ -22,6 +25,18 @@ public class PhotoApp {
     @Bean
     public Uploader uploader() {
         return new S3Uploader();
+    }
+
+    @Bean
+    public IdSender idSender() {
+        return new IdSender(Queue.PHOTO_UPLOAD);
+    }
+
+    @Bean
+    public IdReceiver idReceiver(final PhotoService photoService) {
+        final IdReceiver idReceiver = new IdReceiver(Queue.EXIF_EXTRACTION);
+        idReceiver.addIdConsumer(photoService);
+        return idReceiver;
     }
 
     @Bean

@@ -82,14 +82,11 @@
                 <artifactId>aws-java-sdk-s3</artifactId>
                 <version>1.9.34</version>
             </dependency>
-            <!-- YAML-style properties -->
-            <!--
             <dependency>
-                <groupId>org.yaml</groupId>
-                <artifactId>snakeyaml</artifactId>
-                <version>1.15</version>
+                <groupId>com.rabbitmq</groupId>
+                <artifactId>amqp-client</artifactId>
+                <version>3.5.1</version>
             </dependency>
-            -->
         </dependencies>
     </dependencyManagement>
 

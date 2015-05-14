@@ -6,6 +6,8 @@ import com.drew.metadata.Directory;
 import com.drew.metadata.Metadata;
 import com.drew.metadata.Tag;
 import com.vosmann.jis.aws.s3.Downloader;
+import com.vosmann.jis.queue.IdConsumer;
+import com.vosmann.jis.queue.IdSender;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Optional;
 
-public class ExifService {
+public class ExifService implements IdConsumer {
 
     private static final Logger LOG = LogManager.getLogger(ExifService.class);
 
@@ -25,12 +27,17 @@ public class ExifService {
 
     @Autowired
     private Downloader downloader;
+    @Autowired
+    private IdSender idSender;
 
-    public Optional<String> get(final String id) {
-        return Optional.empty(); // TODO
-    }
+    // TODO
     private Optional<ExifMetadata> getExifMetadata(final String id) {
-        return Optional.empty(); // TODO
+        return Optional.empty();
+    }
+
+    @Override
+    public void accept(final String id) {
+         process(id);
     }
 
     public Optional<String> process(final String id) {
@@ -38,6 +45,7 @@ public class ExifService {
         final Optional<Metadata> metadata = extractAllMetadata(id);
         if (metadata.isPresent()) {
             final ExifMetadata exifMetadata = toExifMetadata(metadata.get());
+            idSender.send(id);
         }
 
         return Optional.empty();
@@ -56,6 +64,9 @@ public class ExifService {
         return Optional.empty();
     }
 
+    /**
+     * May return empty ExifMetadata.
+     */
     private ExifMetadata toExifMetadata(final Metadata metadata) {
         ExifMetadata.Builder builder = new ExifMetadata.Builder();
 
