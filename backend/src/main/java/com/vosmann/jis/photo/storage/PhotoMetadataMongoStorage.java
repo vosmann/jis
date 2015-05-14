@@ -5,6 +5,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.springframework.data.mongodb.core.MongoTemplate;
 
+import java.util.Optional;
+
 public class PhotoMetadataMongoStorage implements PhotoMetadataStorage {
 
     private static final Logger LOG = LogManager.getLogger(PhotoMetadataMongoStorage.class);
@@ -24,14 +26,18 @@ public class PhotoMetadataMongoStorage implements PhotoMetadataStorage {
 
     @Override
     public void flagWithExif(final String id) {
-        final PhotoMetadata photoMetadata = getSafely(id);
-        final PhotoMetadata flagged = PhotoMetadata.copyWithExif(photoMetadata);
-        updateSafely(flagged);
+        final Optional<PhotoMetadata> photoMetadata = getSafely(id);
+        if (photoMetadata.isPresent()) {
+            final PhotoMetadata flagged = PhotoMetadata.copyWithExif(photoMetadata.get());
+            updateSafely(flagged);
+        } else {
+            LOG.error("Couldn't find metadata by id {} in order to flag it with EXIF.");
+        }
     }
 
     @Override
-    public PhotoMetadata get(String id) {
-        final PhotoMetadata photoMetadata = getSafely(id);
+    public Optional<PhotoMetadata> get(String id) {
+        final Optional<PhotoMetadata> photoMetadata = getSafely(id);
         return photoMetadata;
     }
 
@@ -51,13 +57,13 @@ public class PhotoMetadataMongoStorage implements PhotoMetadataStorage {
         }
     }
 
-    private PhotoMetadata getSafely(final String id) {
+    private Optional<PhotoMetadata> getSafely(final String id) {
         try {
             final PhotoMetadata photoMetadata = mongo.findById(id, PhotoMetadata.class, COLLECTION_NAME);
-            return photoMetadata;
+            return Optional.of(photoMetadata);
         } catch (final RuntimeException e) {
             LOG.error("Problem while getting metadata by id {}.", id, e);
-            return null;
+            return Optional.empty();
         }
     }
 
