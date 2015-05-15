@@ -53,7 +53,6 @@ public class ExifMetadataSolrStorage implements ExifMetadataStorage {
     }
 
     private void add(final SolrInputDocument doc) {
-        solr.
         try {
             solr.add(doc);
             solr.commit();

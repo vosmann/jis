@@ -11,6 +11,7 @@ import com.vosmann.jis.queue.Queue;
 import org.apache.solr.client.solrj.SolrRequest;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.util.NamedList;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -52,23 +53,12 @@ public class ExifApp {
         return new ExifMetadataSolrStorage();
     }
 
-    /*
     @Bean
-    public SolrServer solrServer() {
-        final SolrServer solrServer = new SolrServer() {
-            @Override
-            public NamedList<Object> request(SolrRequest solrRequest) throws SolrServerException, IOException {
-
-            }
-
-            @Override
-            public void shutdown() {
-
-            }
-        }
+    public SolrServer solrUpdateServer() {
+        final HttpSolrServer httpSolrServer = new HttpSolrServer("http://localhost:8983/solr/#/exif/update");
+        return httpSolrServer;
     }
-    */
-
+    
     @Bean
     public EmbeddedServletContainerFactory servletContainer() {
         TomcatEmbeddedServletContainerFactory factory = new TomcatEmbeddedServletContainerFactory();
